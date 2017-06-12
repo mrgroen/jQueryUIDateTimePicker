@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<widget id="jQueryUIDatepicker.widget.jQueryUIDatepicker" needsEntityContext="true" xmlns="http://www.mendix.com/widget/1.0/">
-  <name>jQueryUIDatepicker</name>
+<widget id="jQueryUIDateTimePicker.widget.jQueryUIDateTimePicker" needsEntityContext="true" xmlns="http://www.mendix.com/widget/1.0/">
+  <name>jQueryUIDateTimePicker</name>
   <description>A simple alternative to the built-in Mendix datepicker, that uses the jQueryUI Datepicker and Trent Richardson's Timepicker addon (http://trentrichardson.com/examples/timepicker/).</description>
-  <icon></icon>
-
+  <icon>iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABgElEQVQ4T43TPUjWURQG8J9KQiQUkgRC4CRB9IkftIogZDhUS9DQWiD2QUgt0iAiLubg5CA4SLWIQ0EKFSQ49EFEDYGKS1QE0Rglxonzj5eXvy8euMO957nPPee5z6mzu9iPn2XQuh3ut+AH/uAUGvCqFkEjtnIF7jYm8sI1fMZCLYIrmE3AEYzgUu7P4hZ6sV1NEi304BxuZvI8htGd+6L8VVzHrwqSvUHwEB9wLxN9eIx2rOVZKx6hLXPfs63pINjAE0SvEaH4VzzFQFXJHUmyjjeRC4IAf8GJCvAUBnEfN8p6T2xzELzFSQT760w04QVO4znuIDQooj5F3gyCSQzhWQpagKKVGVzMg018TE+EPqORD4LjeJeguxir6rsTF3AYv/Ee8yniPw0i5nC5BslOHjpYEES5KziayKU0T7xWFmH1qxivnIVDWERXxY2XWEZ8WxgoMGdS3HDoevUw7ck5iFk4UPJ0WPlBiv6t8EFZifvQj2Noztc/peHiN/7HX+w9S4f3pSYmAAAAAElFTkSuQmCC</icon>
   <properties>
 		<!-- General -->
         <property key="dateAttribute" type="attribute">

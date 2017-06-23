@@ -13,7 +13,7 @@
                 <attributeType name="DateTime"/>
             </attributeTypes>
         </property>
-		<property key="pickerType" type="enumeration" required="true" defaultValue="DateTimePicker">
+		<property key="pickerType" type="enumeration" defaultValue="DateTimePicker">
             <caption>Picker type</caption>
             <category>General</category>
             <description>Picker type to be shown.</description>
@@ -23,38 +23,48 @@
 				<enumerationValue key="TimePicker">Time</enumerationValue>
 			</enumerationValues>
         </property>
-		<property key="showButtonBar" type="boolean" required="true" defaultValue="false">
+		<property key="showButtonBar" type="boolean" defaultValue="false">
             <caption>Display button bar</caption>
             <category>General</category>
             <description>Display a button for selecting Today's date and a Done button for closing the calendar.</description>
         </property>
+        <property key="iconTooltip" type="string" required="false">
+            <caption>Icon tooltip</caption>
+            <category>General</category>
+            <description>Tooltip on the calendar icon.</description>
+        </property>
+        <property key="placeholderText" type="string" required="false">
+            <caption>Placeholder text</caption>
+            <category>General</category>
+            <description></description>
+        </property>
 		<!-- Date options -->
-		<property key="dateFormat" type="string" required="true" defaultValue="mm/dd/yy">
+		<property key="dateFormat" type="string" defaultValue="mm/dd/yy">
             <caption>Date format</caption>
             <category>Date options</category>
             <description>Date format that is used, e.g. mm/dd/yy or dd-mm-yy. See jQueryUI documentation (http://api.jqueryui.com/datepicker/#utility-formatDate) for possible formats.</description>
         </property>
-        <property key="defaultDate" type="string" required="false" defaultValue="01/01/1970">
+        <property key="defaultDate" type="string" defaultValue="01/01/1970" required="false">
             <caption>Default date</caption>
             <category>Date options</category>
             <description>Optional default date to start with, should be corresponding to the date format.</description>
         </property>
-        <property key="yearRange" type="string" required="false" defaultValue="-100:+0">
+        <property key="yearRange" type="string" defaultValue="-100:+0" required="false">
             <caption>Range</caption>
             <category>Date options</category>
             <description>Range in years, either absolute (1970:2010) or relative (-100:+0)</description>
         </property>
-		<property key="showMonthYearMenu" type="boolean" required="true" defaultValue="true">
+		<property key="showMonthYearMenu" type="boolean" defaultValue="true">
             <caption>Month / year menus</caption>
             <category>Date options</category>
             <description>Show month and year dropdowns in place of the static month/year header to facilitate navigation through large timeframes.</description>
         </property>
-		<property key="showWeekNr" type="boolean" required="true" defaultValue="false">
+		<property key="showWeekNr" type="boolean" defaultValue="false">
             <caption>Show weeknumber</caption>
             <category>Date options</category>
             <description>Show the week of the year.</description>
         </property>
-		<property key="firstDay" type="enumeration" required="true" defaultValue="Monday">
+		<property key="firstDay" type="enumeration" defaultValue="Monday">
             <caption>First day of the week</caption>
             <category>Date options</category>
             <description>Only used when weeknumber is shown. The default calculation follows the ISO 8601 definition: the week starts on Monday, the first week of the year contains the first Thursday of the year.</description>
@@ -64,7 +74,7 @@
 			</enumerationValues>
         </property>
 		<!-- Time options -->
-		<property key="timeFormat" type="string" required="true" defaultValue="hh:mm tt">
+		<property key="timeFormat" type="string" defaultValue="hh:mm tt">
             <caption>Time format</caption>
             <category>Time options</category>
             <description>Time format that is used, e.g. hh:mm tt or HH:mm. See documentation (http://trentrichardson.com/examples/timepicker/#tp-formatting) for possible formats.</description>
@@ -78,6 +88,13 @@
             <caption>Maximum time</caption>
             <category>Time options</category>
             <description>String of the maximum time allowed. '8:00 pm' will restrict to times before 8pm. Should be corresponding to the time format.</description>
+        </property>
+        <!-- Behavior options -->
+        <property key="onChangeMicroflow" type="microflow" required="false">
+            <caption>On change microflow</caption>
+            <category>Behavior</category>
+            <description></description>
+            <returnType type="Void" />
         </property>
 	</properties>
 </widget>

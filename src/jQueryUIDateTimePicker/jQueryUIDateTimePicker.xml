@@ -39,6 +39,11 @@
             <description></description>
         </property>
 		<!-- Date options -->
+		<property key="customDateFormat" type="boolean" defaultValue="false">
+            <caption>Use custom date format</caption>
+            <category>Date options</category>
+            <description></description>
+        </property>
 		<property key="dateFormat" type="string" defaultValue="mm/dd/yy">
             <caption>Date format</caption>
             <category>Date options</category>
@@ -64,16 +69,22 @@
             <category>Date options</category>
             <description>Show the week of the year.</description>
         </property>
-		<property key="firstDay" type="enumeration" defaultValue="Monday">
+		<property key="firstDay" type="enumeration" defaultValue="Default">
             <caption>First day of the week</caption>
             <category>Date options</category>
             <description>Only used when weeknumber is shown. The default calculation follows the ISO 8601 definition: the week starts on Monday, the first week of the year contains the first Thursday of the year.</description>
 			<enumerationValues>
+                <enumerationValue key="Default">Default</enumerationValue>
 				<enumerationValue key="Monday">Monday</enumerationValue>
 				<enumerationValue key="Sunday">Sunday</enumerationValue>
 			</enumerationValues>
         </property>
 		<!-- Time options -->
+		<property key="customTimeFormat" type="boolean" defaultValue="false">
+            <caption>Use custom time format</caption>
+            <category>Time options</category>
+            <description></description>
+        </property>
 		<property key="timeFormat" type="string" defaultValue="hh:mm tt">
             <caption>Time format</caption>
             <category>Time options</category>

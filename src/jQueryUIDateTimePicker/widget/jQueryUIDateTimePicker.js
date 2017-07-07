@@ -13,12 +13,18 @@ require({
         { name: "jquery-ui",
             location: "../../widgets/jQueryUIDateTimePicker/lib",
             main: "jquery-ui" },
+        { name: "jquery-ui-i18n",
+            location: "../../widgets/jQueryUIDateTimePicker/lib",
+            main: "jquery-ui-i18n" },
         { name: "jquery-ui-sliderAccess",
             location: "../../widgets/jQueryUIDateTimePicker/lib",
             main: "jquery-ui-sliderAccess" },
         { name: "jquery-ui-timepicker-addon",
             location: "../../widgets/jQueryUIDateTimePicker/lib",
-            main: "jquery-ui-timepicker-addon" }
+            main: "jquery-ui-timepicker-addon" },
+        { name: "jquery-ui-timepicker-addon-i18n",
+            location: "../../widgets/jQueryUIDateTimePicker/lib",
+            main: "jquery-ui-timepicker-addon-i18n" }
     ]
 }, [
     "dojo/_base/declare",
@@ -31,8 +37,10 @@ require({
     "jquery",
     "dojo/text!jQueryUIDateTimePicker/widget/template/jQueryUIDateTimePicker.html",
     "jquery-ui",
+    "jquery-ui-i18n",
     "jquery-ui-sliderAccess",
-    "jquery-ui-timepicker-addon"
+    "jquery-ui-timepicker-addon",
+    "jquery-ui-timepicker-addon-i18n"
 ], function(declare, _WidgetBase, _TemplatedMixin, dom, dojoOn, dojoConstruct, dojoHtml, $, widgetTemplate) {
     "use strict";
 
@@ -45,6 +53,7 @@ require({
 
         // Parameters configured in the Modeler.
         pickerType: "",
+        customDateFormat: "",
         dateFormat: "",
         showButtonBar: "",
         iconTooltip: "",
@@ -58,8 +67,10 @@ require({
 
         /* Timepicker options*/
         /* http://trentrichardson.com/examples/timepicker/ */
+        customTimeFormat: false,
         timeFormat: "",
-        /* @TODO: add timeRange etc. */
+        minTime: "",
+        maxTime: "",
 
         // Internal variables. Non-primitives created in the prototype are shared between all widget instances.
         _handle: null,
@@ -91,19 +102,40 @@ require({
                 .get(0);
             $(this._datePicker).attr("placeholder", this.placeholderText);
 
+            // substracting the first two characters of the Mendix user language ("nl_NL")
+            var mxLanguage = mx.session.getConfig().uiconfig.locale.substring(0, 2),
+                datePickerLanguage = $.datepicker.regional[mxLanguage],
+                timePickerLanguage = $.timepicker.regional[mxLanguage],
+                customFormatOptions = this._getCustomFormatOptions();
+
             this._setParams();
+
             switch (this.pickerType) {
             case "DatePicker":
                 $(this._datePicker).datepicker(this.params);
+                if (typeof datePickerLanguage !== "undefined") {
+                    $(this._datePicker).datepicker("option", datePickerLanguage);
+                }
+                $(this._datePicker).datepicker("option", customFormatOptions);
                 break;
             case "TimePicker":
                 $(this._datePicker).timepicker(this.params);
+                if (typeof timePickerLanguage !== "undefined") {
+                    $(this._datePicker).timepicker("option", timePickerLanguage);
+                }
+                $(this._datePicker).timepicker("option", customFormatOptions);
                 break;
             case "DateTimePicker":
-                $(this._datePicker).datetimepicker(this.params);
-                break;
             default:
                 $(this._datePicker).datetimepicker(this.params);
+                if (typeof datePickerLanguage !== "undefined") {
+                    $(this._datePicker).datepicker("option", datePickerLanguage);
+                }
+                $(this._datePicker).datepicker("option", customFormatOptions);
+                if (typeof timePickerLanguage !== "undefined") {
+                    $(this._datePicker).timepicker("option", timePickerLanguage);
+                }
+                $(this._datePicker).timepicker("option", customFormatOptions);
                 break;
             }
 
@@ -133,6 +165,20 @@ require({
             $(element).trigger("focus");
         },
 
+        _getCustomFormatOptions: function _getCustomFormatOptions() {
+            var params = {};
+            if (this.customDateFormat) {
+                params.dateFormat = this.dateFormat;
+            }
+            if (this.firstDay !== "Default") {
+                params.firstDay = this.firstDay === "Monday" ? 1 : this._seven;
+            }
+            if (this.customTimeFormat) {
+                params.timeFormat = this.timeFormat;
+            }
+            return params;
+        },
+
         _setParams: function _setParams() {
             logger.debug(this.id + "._setParams");
             var params = {
@@ -150,18 +196,16 @@ require({
             };
 
             if (this.pickerType === "DatePicker" || this.pickerType === "DateTimePicker") {
-                params.dateFormat = this.dateFormat;
                 params.changeMonth = this.showMonthYearMenu;
                 params.changeYear = this.showMonthYearMenu;
                 params.yearRange = this.yearRange === "" ? "-100:+0" : this.yearRange;
                 params.defaultDate = this.defaultDate;
                 params.showWeek = this.showWeekNr;
-                params.firstDay = this.firstDay === "Monday" ? 1 : this._seven;
+
             }
 
             if (this.pickerType === "TimePicker" || this.pickerType === "DateTimePicker") {
                 params.timeInput = true;
-                params.timeFormat = this.timeFormat;
                 params.minTime = this.minTime === "" ? null : this.minTime;
                 params.maxTime = this.maxTime === "" ? null : this.maxTime;
                 params.addSliderAccess = true;
@@ -232,6 +276,16 @@ require({
             this.connect(this._datePicker, "change", this._onChange.bind(this, this._datePicker));
         },
 
+        _handleObjectSubscription: function(guid) {
+            this._updateDatepicker(this._datePicker, this._contextObj.get(this.dateAttribute));
+        },
+
+        _handleAttrSubscription: function(guid, attr, value) {
+            if (value) {
+                this._updateDatepicker(this._datePicker, value);
+            }
+        },
+
         _resetSubscriptions: function _resetSubscriptions() {
             // Release handles on previous object, if any.
             this.unsubscribeAll();
@@ -239,12 +293,12 @@ require({
             if (this._contextObj) {
                 this.subscribe({
                     guid: this._contextObj.getGuid(),
+                    callback: this._handleObjectSubscription.bind(this)
+                });
+                this.subscribe({
+                    guid: this._contextObj.getGuid(),
                     attr: this.dateAttribute,
-                    callback: function(guid, attr, value) {
-                        if (value) {
-                            this._updateDatepicker(this.domNode, value);
-                        }
-                    }
+                    callback: this._handleAttrSubscription.bind(this)
                 });
                 this.subscribe({
                     guid: this._contextObj.getGuid(),

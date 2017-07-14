@@ -3,7 +3,7 @@
 * Copyright (c) 2016 Trent Richardson; Licensed MIT */
 (function (factory) {
 	if (typeof define === 'function' && define.amd) {
-		define(['jquery', 'jquery-ui'], factory);
+		define(['jQueryUIDateTimePicker/lib/jquery-1.12.4', 'jQueryUIDateTimePicker/lib/jquery-ui'], factory);
 	} else {
 		factory(jQuery);
 	}

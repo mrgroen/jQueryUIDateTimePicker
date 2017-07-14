@@ -7,7 +7,7 @@
 	if ( typeof define === "function" && define.amd ) {
 
 		// AMD. Register as an anonymous module.
-		define([ "jquery" ], factory );
+		define([ "jQueryUIDateTimePicker/lib/jquery-1.12.4" ], factory );
 	} else {
 
 		// Browser globals

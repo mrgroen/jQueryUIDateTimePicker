@@ -18,8 +18,8 @@
     "use strict";
     if (typeof define === "function" && define.amd) {
         define([
-            "jquery",
-            "jquery-ui"
+            "jQueryUIDateTimePicker/lib/jquery-1.12.4",
+            "jQueryUIDateTimePicker/lib/jquery-ui"
         ], factory);
     } else {
         factory(jQuery);

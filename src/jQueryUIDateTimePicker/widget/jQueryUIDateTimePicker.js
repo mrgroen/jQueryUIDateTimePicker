@@ -5,28 +5,7 @@
     Copyright 2017 Marcus Groen (added functionality)
     Copyright 2017 Bart Rikers
 */
-require({
-    packages: [
-        { name: "jquery",
-            location: "../../widgets/jQueryUIDateTimePicker/lib",
-            main: "jquery-1.12.4" },
-        { name: "jquery-ui",
-            location: "../../widgets/jQueryUIDateTimePicker/lib",
-            main: "jquery-ui" },
-        { name: "jquery-ui-i18n",
-            location: "../../widgets/jQueryUIDateTimePicker/lib",
-            main: "jquery-ui-i18n" },
-        { name: "jquery-ui-sliderAccess",
-            location: "../../widgets/jQueryUIDateTimePicker/lib",
-            main: "jquery-ui-sliderAccess" },
-        { name: "jquery-ui-timepicker-addon",
-            location: "../../widgets/jQueryUIDateTimePicker/lib",
-            main: "jquery-ui-timepicker-addon" },
-        { name: "jquery-ui-timepicker-addon-i18n",
-            location: "../../widgets/jQueryUIDateTimePicker/lib",
-            main: "jquery-ui-timepicker-addon-i18n" }
-    ]
-}, [
+define([
     "dojo/_base/declare",
     "mxui/widget/_WidgetBase",
     "dijit/_TemplatedMixin",
@@ -34,14 +13,14 @@ require({
     "dojo/on",
     "dojo/dom-construct",
     "dojo/html",
-    "jquery",
     "dojo/text!jQueryUIDateTimePicker/widget/template/jQueryUIDateTimePicker.html",
-    "jquery-ui",
-    "jquery-ui-i18n",
-    "jquery-ui-sliderAccess",
-    "jquery-ui-timepicker-addon",
-    "jquery-ui-timepicker-addon-i18n"
-], function(declare, _WidgetBase, _TemplatedMixin, dom, dojoOn, dojoConstruct, dojoHtml, $, widgetTemplate) {
+    "jQueryUIDateTimePicker/lib/jquery-1.12.4",
+    "jQueryUIDateTimePicker/lib/jquery-ui",
+    "jQueryUIDateTimePicker/lib/jquery-ui-i18n",
+    "jQueryUIDateTimePicker/lib/jquery-ui-sliderAccess",
+    "jQueryUIDateTimePicker/lib/jquery-ui-timepicker-addon",
+    "jQueryUIDateTimePicker/lib/jquery-ui-timepicker-addon-i18n"
+], function(declare, _WidgetBase, _TemplatedMixin, dom, dojoOn, dojoConstruct, dojoHtml, widgetTemplate, $) {
     "use strict";
 
     return declare("jQueryUIDateTimePicker.widget.jQueryUIDateTimePicker", [
@@ -186,7 +165,7 @@ require({
                 onSelect: function(date, i) {
                     if (date !== i.lastVal) {
                         /* jQueryUIDateTimePicker doesn't trigger onchange event
-                           so we must trigger it manually in the onSelect function */
+                                       so we must trigger it manually in the onSelect function */
                         dojoOn.emit(this, "change", {
                             bubbles: true,
                             cancelable: true
@@ -201,7 +180,6 @@ require({
                 params.yearRange = this.yearRange === "" ? "-100:+0" : this.yearRange;
                 params.defaultDate = this.defaultDate;
                 params.showWeek = this.showWeekNr;
-
             }
 
             if (this.pickerType === "TimePicker" || this.pickerType === "DateTimePicker") {
@@ -339,3 +317,4 @@ require({
         }
     });
 });
+require([ "jQueryUIDateTimePicker/widget/jQueryUIDateTimePicker" ]);

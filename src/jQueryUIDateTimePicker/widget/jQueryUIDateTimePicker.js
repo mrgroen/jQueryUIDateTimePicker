@@ -165,12 +165,20 @@ define([
                 onSelect: function(date, i) {
                     if (date !== i.lastVal) {
                         /* jQueryUIDateTimePicker doesn't trigger onchange event
-                                       so we must trigger it manually in the onSelect function */
+                           so we must trigger it manually in the onSelect function */
                         dojoOn.emit(this, "change", {
                             bubbles: true,
                             cancelable: true
                         });
                     }
+                    /* fix buggy IE focus functionality */
+                    $(this).datepicker("disable");
+                },
+                onClose: function() {
+                    /* fix buggy IE focus functionality */
+                    window.setTimeout(function(element) {
+                        $(element).datepicker("enable");
+                    }.bind(null, this), 500);
                 }
             };
 

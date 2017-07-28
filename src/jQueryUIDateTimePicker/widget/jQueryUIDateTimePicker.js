@@ -43,6 +43,9 @@ define([
         yearRange: "",
         defaultDate: "",
         onChangeMicroflow: "",
+        onChangeMicroflowProgress: "",
+        onChangeMicroflowProgressMsg: "",
+        onChangeMicroflowAsync: "",
 
         /* Timepicker options*/
         /* http://trentrichardson.com/examples/timepicker/ */
@@ -296,17 +299,14 @@ define([
 
         _runMicroflow: function _runMicroflow(obj, mf, cb) {
             if (mf) {
-                var params = {
-                    applyto: "selection",
-                    actionname: mf,
-                    guids: []
-                };
-                if (obj) {
-                    params.guids = [ obj.getGuid() ];
-                }
-                mx.data.action({
-                    params: params,
-                    callback: function callback(objects) {
+                var parameters = {
+                    origin: this.mxform,
+                    params: {
+                        actionname: mf,
+                        applyto: "selection",
+                        guids: []
+                    },
+                    callback: function(objects) {
                         if (cb) {
                             cb(objects);
                         }
@@ -315,10 +315,28 @@ define([
                         if (cb) {
                             cb();
                         }
-                        mx.ui.error("Error executing microflow " + mf + " : " + errorObject.message);
-                        logger.warn(errorObject.description);
+                        /*
+                            When used asynchronous the feedback validations are causing an call to this error function.
+                            We don't need this behaviour in this widget since validations are already handled.
+                        */
+                        if (errorObject.message.indexOf("validation error") === -1) {
+                            mx.ui.error("Error executing microflow " + mf + " : " + errorObject.message);
+                        }
                     }
-                }, this);
+                };
+                if (this.onChangeMicroflowProgress === true) {
+                    parameters.progress = "modal";
+                }
+                if (this.onChangeMicroflowProgressMsg !== "") {
+                    parameters.progressMsg = this.onChangeMicroflowProgressMsg;
+                }
+                if (this.onChangeMicroflowAsync === true) {
+                    parameters.async = this.onChangeMicroflowAsync;
+                }
+                if (obj) {
+                    parameters.params.guids = [ obj.getGuid() ];
+                }
+                mx.ui.action(mf, parameters, this);
             } else if (cb) {
                 cb();
             }

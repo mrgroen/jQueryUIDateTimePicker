@@ -8,7 +8,7 @@
     @file      : jQueryUIDatepicker.js
     @version   : 2.0
     @author    : Bart Rikers / Joppe van Gisbergen
-    @date      : 03-31-2017
+    @date      : 09-08-2017
     @copyright : Bart Rikers
     @license   : Apache 2
 
@@ -19,16 +19,16 @@
 
 // Required module list. Remove unnecessary modules, you can always get them back from the boilerplate.
 require({
-    packages: [
+	packages: [
 	{name: 'jquery', location: '../../widgets/jQueryUIDatepicker/lib', main: 'jquery-1.11.2.min' },
 	{name: 'jquery-ui', location: '../../widgets/jQueryUIDatepicker/lib', main: 'jquery-ui.min' },
 	{name: 'jquery-ui-timepicker', location: '../../widgets/jQueryUIDatepicker/lib', main: 'jquery-ui-timepicker.min' }
 	]
 }, [
     'dojo/_base/declare', 'mxui/widget/_WidgetBase', 'dijit/_TemplatedMixin',
-    'mxui/dom', 'dojo/dom', 'dojo/dom-class', 'dojo/text', 'dojo/on',
+    'mxui/dom', 'dojo/dom', 'dojo/dom-class', 'dojo/dom-attr', 'dojo/dom-construct', 'dojo/text', 'dojo/on',
     'jquery', 'jquery-ui', 'jquery-ui-timepicker', 'dojo/text!jQueryUIDatepicker/widget/template/jQueryUIDatepicker.html'
-], function (declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, domClass, text, dojoOn, $, jqueryui, jqueryui2, widgetTemplate) {
+], function (declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, domClass, domAttr, dojoConstruct, text, dojoOn, $, jqueryui, jqueryuiTimepicker, widgetTemplate) {
     'use strict';
     
     // Declare widget's prototype.
@@ -36,6 +36,10 @@ require({
         // _TemplatedMixin will create our dom node using this HTML template.
         templateString: widgetTemplate,
 
+		// DOM elements
+        inputLabel: null,
+		jQueryUIDatepicker: null,
+		
         // Parameters configured in the Modeler.
         pickerType: "",
 		dateFormat: "",
@@ -49,8 +53,12 @@ require({
 		/*Timepicker options*/
 		/* http://trentrichardson.com/examples/timepicker/ */
 		timeFormat: "",
-		/*ToDo: add timeRange etc. */
 		
+		/* Label options */
+		labelCaption: "",
+        labelWidth: "",
+        displayEnum: "",
+
         // Internal variables. Non-primitives created in the prototype are shared between all widget instances.
         _handle: null,
         _contextObj: null,
@@ -65,7 +73,6 @@ require({
         postCreate: function () {
             console.log(this.id + '.postCreate');
 
-			var datepicker = this.domNode.appendChild(dom.create('input', { 'class': 'form-control jQueryUIDatepicker' }));
 			var params = {
 							showButtonPanel: this.showButtonBar,
 							onSelect: function(d,i){
@@ -97,30 +104,54 @@ require({
 				params.timeFormat = this.timeFormat;
 				params.minTime = this.minTime == '' ? null : this.minTime;
 				params.maxTime = this.maxTime == '' ? null : this.maxTime;
-				params.addSliderAccess = true;
-				params.sliderAccessArgs = { touchonly: false };
+				params.addSliderAccess = false; //ToDo: add SliderAccess later on
+				//params.sliderAccessArgs = { touchonly: false };
 			}
 
 			// Initialize the picker
 			switch(this.pickerType) {
 				case 'DatePicker':
-					$(datepicker).datepicker(params);
+					$(this.jQueryUIDatepicker).datepicker(params);
+					domAttr.set(this.jQueryUIDatepicker, 'placeholder', this.dateFormat);
 					break;
 				case 'TimePicker':
-					$(datepicker).timepicker(params);
+					$(this.jQueryUIDatepicker).timepicker(params);
+					domAttr.set(this.jQueryUIDatepicker, 'placeholder', this.timeFormat);
 					break;
 				case 'DateTimePicker':
-					$(datepicker).datetimepicker(params);
+					$(this.jQueryUIDatepicker).datetimepicker(params);
+					domAttr.set(this.jQueryUIDatepicker, 'placeholder', this.dateFormat + ' ' + this.timeFormat);
 			}
+			
+			// Set label
+			if (this.labelCaption && this.labelCaption.trim().length) {
+                this.inputLabel.innerHTML = this.labelCaption;
+            } else {
+                dojoConstruct.destroy(this.inputLabel);
+            }
+
+            if (this.displayEnum === "horizontal") {
+                domClass.add(this.inputLabel, "col-sm-" + this.labelWidth);
+                domClass.add(this.jQueryUIDatepickerInputWrapper, "col-sm-" + (12 - this.labelWidth));
+            }
 			
             this._setupEvents();
         },
 		
-		_updateDatepicker: function(element, value){
+		_updateDateTimepicker: function(element, value){
 			if (value){
 				var d = new Date(value);
-				var datepicker = $(element).children('.jQueryUIDatepicker').first();
-				datepicker.datepicker("setDate" , d);
+				
+				switch(this.pickerType) {
+					case 'DatePicker':
+						$(this.jQueryUIDatepicker).datepicker("setDate" , d);
+						break;
+					case 'TimePicker':
+						$(this.jQueryUIDatepicker).timepicker("setDate" , d);
+						break;
+					case 'DateTimePicker':
+						$(this.jQueryUIDatepicker).datetimepicker("setDate" , d);
+				}
 			}
 		},
 		
@@ -132,7 +163,7 @@ require({
 			
 			//get current value and set value in datepicker
 			var dateValue = this._contextObj.get(this.dateAttribute);
-			this._updateDatepicker(this.domNode, dateValue);
+			this._updateDateTimepicker(this.domNode, dateValue);
 			
             this._resetSubscriptions();
             this._updateRendering();
@@ -161,12 +192,12 @@ require({
         },
 
         _setupEvents: function () {
-			var datepicker = $(this.domNode).children('.jQueryUIDatepicker').get(0);
-			this.connect(datepicker, 'change', function (e) {
+			//var datepicker = $(this.domNode).children('.jQueryUIDatepicker').get(0);
+			this.connect(this.jQueryUIDatepicker, 'change', function (e) {
 				console.log(this.id + '.datepicker change');
 				
-				var datepicker = $(e.target);
-				var myDate = datepicker.datepicker('getDate');
+				var datePicker = $(e.target);
+				var myDate = datePicker.datepicker('getDate');
 				
 				if (myDate){
 					this._contextObj.set(this.dateAttribute,myDate);
@@ -178,11 +209,11 @@ require({
         },
 
         _updateRendering: function () {
-            
+            this.inputLabel.disabled = this._readOnly;
         },
 
         _resetSubscriptions: function () {
-            // Release handle on previous object, if any.
+           // Release handle on previous object, if any.
             if (this._handle) {
                 this.unsubscribe(this._handle);
                 this._handle = null;
@@ -200,7 +231,7 @@ require({
 					attr: this.dateAttribute,
 					callback : function(guid, attr, value) {
 						if (value){
-							this._updateDatepicker(this.domNode, value);
+							this._updateDateTimepicker(this.domNode, value);
 						}
 					}
 				});

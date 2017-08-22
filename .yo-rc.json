@@ -1,0 +1,11 @@
+{
+  "generator-mendix": {
+    "promptValues": {
+      "copyright": "Incentro 2016",
+      "license": "Apache 2",
+      "author": "Marcus Groen",
+      "boilerplate": "empty",
+      "widgetoptions": []
+    }
+  }
+}

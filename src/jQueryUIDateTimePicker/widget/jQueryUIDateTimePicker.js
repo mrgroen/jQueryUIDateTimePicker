@@ -175,13 +175,14 @@ define([
                         });
                     }
                     /* fix buggy IE focus functionality */
+					/* https://bugs.jqueryui.com/ticket/9125 */
                     $(this).datepicker("disable");
-                },
-                onClose: function() {
-                    /* fix buggy IE focus functionality */
-                    window.setTimeout(function(element) {
-                        $(element).datepicker("enable");
-                    }.bind(null, this), 500);
+					if (self.pickerType === "DatePicker") {
+						$(this).datepicker("disable");
+						window.setTimeout(function(element) {
+							$(element).datepicker("enable");
+						}.bind(null, this), 50);
+					}
                 }
             };
 

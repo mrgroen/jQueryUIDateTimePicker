@@ -85,7 +85,7 @@ define([
             $(this._datePicker).attr("placeholder", this.placeholderText);
 
             // substracting the first two characters of the Mendix user language ("nl_NL")
-            var mxLanguage = mx.session.getConfig().uiconfig.locale.substring(0, 2),
+            var mxLanguage = (mx.session.sessionData) ? mx.session.sessionData.locale.code.substring(0, 2) : mx.session.getConfig().uiconfig.locale.substring(0, 2),
                 datePickerLanguage = $.datepicker.regional[mxLanguage],
                 timePickerLanguage = $.timepicker.regional[mxLanguage],
                 customFormatOptions = this._getCustomFormatOptions();
@@ -175,14 +175,14 @@ define([
                         });
                     }
                     /* fix buggy IE focus functionality */
-					/* https://bugs.jqueryui.com/ticket/9125 */
+                    /* https://bugs.jqueryui.com/ticket/9125 */
                     $(this).datepicker("disable");
-					if (self.pickerType === "DatePicker") {
-						$(this).datepicker("disable");
-						window.setTimeout(function(element) {
-							$(element).datepicker("enable");
-						}.bind(null, this), 50);
-					}
+                    if (self.pickerType === "DatePicker") {
+                        $(this).datepicker("disable");
+                        window.setTimeout(function(element) {
+                            $(element).datepicker("enable");
+                        }.bind(null, this), 50);
+                    }
                 }
             };
 
